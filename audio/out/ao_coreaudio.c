@@ -78,7 +78,7 @@ static OSStatus render_cb_lpcm(void *ctx, AudioUnitRenderActionFlags *aflags,
     struct ao *ao   = ctx;
     struct priv *p  = ao->priv;
     void *planes[MP_NUM_CHANNELS] = {0};
-
+MP_WARN(ao, "callback called with %d frames\n", (int)frames);
     for (int n = 0; n < ao->num_planes; n++)
         planes[n] = buffer_list->mBuffers[n].mData;
 
@@ -346,8 +346,10 @@ static void uninit(struct ao *ao)
 static OSStatus hotplug_cb(AudioObjectID id, UInt32 naddr,
                            const AudioObjectPropertyAddress addr[],
                            void *ctx) {
-    reinit_device(ctx);
-    ao_hotplug_event(ctx);
+    struct ao *ao = ctx;
+    MP_WARN(ao, "got hotplug event\n");
+    reinit_device(ao);
+    ao_hotplug_event(ao);
     return noErr;
 }
 

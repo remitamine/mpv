@@ -524,6 +524,16 @@ gstream = stream;
                                             &wakeup);
     CHECK_CA_ERROR("can't remove property listener");
 
+    MP_WARN(ao, "sleeping 1 second\n");
+    mp_sleep_us(1e6);
+    MP_WARN(ao, "done.\n");
+
+    err = CA_GET(stream, kAudioStreamPropertyPhysicalFormat, &actual_format);
+    if (err == noErr)
+        ca_print_asbd(ao, "physical format at the end:", &actual_format);
+    else
+        MP_ERR(ao, "error\n");
+
 coreaudio_error:
     sem_destroy(&wakeup);
     return format_set;
