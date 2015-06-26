@@ -474,6 +474,14 @@ bool ca_change_physical_format_sync(struct ao *ao, AudioStreamID stream,
     bool format_set = false;
 hack = ao;
 gstream = stream;
+
+    AudioStreamBasicDescription old_format = {0};
+    err = CA_GET(gstream, kAudioStreamPropertyPhysicalFormat, &old_format);
+    if (err == noErr)
+        ca_print_asbd(hack, "old physical format:", &old_format);
+    else
+        MP_ERR(hack, "error\n");
+
     ca_print_asbd(ao, "setting stream physical format:", &change_format);
 
     sem_t wakeup;

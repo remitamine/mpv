@@ -141,6 +141,8 @@ static bool reinit_device(struct ao *ao) {
     CHECK_CA_ERROR("failed to get device UID");
     ao->detected_device = talloc_steal(ao, uid);
 
+    MP_WARN(ao, "device uid: %s\n", ao->detected_device);
+
     return true;
 
 coreaudio_error:
