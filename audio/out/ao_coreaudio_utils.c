@@ -448,12 +448,21 @@ OSStatus ca_enable_mixing(struct ao *ao, AudioDeviceID device, bool changed)
     return noErr;
 }
 
+static struct ao *hack;
+static AudioStreamID gstream;
+
 static OSStatus ca_change_format_listener(
     AudioObjectID object, uint32_t n_addresses,
     const AudioObjectPropertyAddress addresses[],
     void *data)
 {
     sem_t *sem = data;
+    AudioStreamBasicDescription actual_format = {0};
+    OSStatus err = CA_GET(gstream, kAudioStreamPropertyPhysicalFormat, &actual_format);
+    if (err == noErr)
+        ca_print_asbd(hack, "physical format changed:", &actual_format);
+    else
+        MP_ERR(hack, "error\n");
     sem_post(sem);
     return noErr;
 }
@@ -463,7 +472,8 @@ bool ca_change_physical_format_sync(struct ao *ao, AudioStreamID stream,
 {
     OSStatus err = noErr;
     bool format_set = false;
-
+hack = ao;
+gstream = stream;
     ca_print_asbd(ao, "setting stream physical format:", &change_format);
 
     sem_t wakeup;
@@ -490,7 +500,7 @@ bool ca_change_physical_format_sync(struct ao *ao, AudioStreamID stream,
 
     /* The AudioStreamSetProperty is not only asynchronous,
      * it is also not Atomic, in its behaviour. */
-    struct timespec timeout = mp_rel_time_to_timespec(0.5);
+    struct timespec timeout = mp_rel_time_to_timespec(10);
     AudioStreamBasicDescription actual_format = {0};
     while (1) {
         err = CA_GET(stream, kAudioStreamPropertyPhysicalFormat, &actual_format);
