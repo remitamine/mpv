@@ -701,7 +701,6 @@ static const struct m_option options[] = {
 const struct vo_driver video_out_rpi = {
     .description = "Raspberry Pi (MMAL)",
     .name = "rpi",
-    .caps = VO_CAP_SYNC_DISPLAY,
     .preinit = preinit,
     .query_format = query_format,
     .reconfig = reconfig,

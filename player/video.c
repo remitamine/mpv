@@ -960,9 +960,7 @@ void write_video(struct MPContext *mpctx, double endpts)
     int drop_repeat = 0;
     double vsync = vo_get_vsync_interval(vo) / 1e6;
     if (vsync > 0 && adjusted_duration > 0 && adjusted_duration <= 0.05 &&
-        opts->video_sync_mode == 1 &&
-        (vo->driver->caps & VO_CAP_SYNC_DISPLAY) &&
-        !using_spdif_passthrough(mpctx))
+        opts->video_sync_mode == 1 && !using_spdif_passthrough(mpctx))
     {
         if (!mpctx->display_sync_active)
             mpctx->timestamp_unrounding_error = 0;
